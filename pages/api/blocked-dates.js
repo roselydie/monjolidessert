@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end()
   const { data, error } = await supabase
     .from('blocked_dates')
-    .select('date, reason')
+    .select('date, reason, slots')
     .order('date', { ascending: true })
   if (error) return res.status(500).json({ error: error.message })
   return res.status(200).json({ dates: data })

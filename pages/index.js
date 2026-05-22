@@ -1050,3 +1050,22 @@ const S = {
   successText:{fontSize:14,color:"#6a5f5a",lineHeight:1.8,marginBottom:20},
   successDetails:{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",fontSize:13,color:"#9a8880",marginBottom:28,fontStyle:"italic"},
 };
+const [order, setOrder] = useState(emptyOrder());
+const [blockedDates, setBlockedDates] = useState({});
+
+useEffect(() => {
+  fetch("/api/blocked-dates")
+    .then(r => r.json())
+    .then(data => {
+      const config = {};
+      (data.dates || []).forEach(d => {
+        config[d.date] = d.slots ?? 0;
+      });
+      setBlockedDates(config);
+    });
+}, []);
+
+const isDateBlocked = (dateStr) => {
+  if (blockedDates[dateStr] === undefined) return false;
+  return blockedDates[dateStr] === 0;
+};
