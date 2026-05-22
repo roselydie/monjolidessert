@@ -11,11 +11,11 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Non autorisé' })
   }
   if (req.method === 'POST') {
-    const { date, reason } = req.body
+    const { date, slots, reason } = req.body
     if (!date) return res.status(400).json({ error: 'Date manquante' })
     const { error } = await supabase
       .from('blocked_dates')
-      .upsert({ date, reason: reason || '' }, { onConflict: 'date' })
+      .upsert({ date, slots: slots ?? 0, reason: reason || '' }, { onConflict: 'date' })
     if (error) return res.status(500).json({ error: error.message })
     return res.status(200).json({ ok: true })
   }
@@ -23,9 +23,7 @@ export default async function handler(req, res) {
     const { date } = req.body
     if (!date) return res.status(400).json({ error: 'Date manquante' })
     const { error } = await supabase
-      .from('blocked_dates')
-      .delete()
-      .eq('date', date)
+      .from('blocked_dates').delete().eq('date', date)
     if (error) return res.status(500).json({ error: error.message })
     return res.status(200).json({ ok: true })
   }
